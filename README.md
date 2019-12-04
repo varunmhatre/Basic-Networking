@@ -1,3 +1,3 @@
 # Basic-Networking
 
-Projects with simple client server architecture
+Projects with simple client-server architecture
