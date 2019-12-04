@@ -1,11 +1,11 @@
 #include <iostream>
+#include <string>
 #include <WS2tcpip.h>
 
 #pragma comment (lib, "ws2_32.lib")
 
-using namespace std;
 
-void main()
+int main()
 {
 	//Initialize winsock
 	WSADATA wsData;
@@ -14,16 +14,16 @@ void main()
 	int wsOK = WSAStartup(ver, &wsData);
 	if (wsOK != 0)
 	{
-		cerr << "Can't initialize winsock! Quitting" << endl;
-		return;
+		std::cerr << "Can't initialize winsock! Quitting" << std::endl;
+		return 0;
 	}
 
 	//Create a socket
 	SOCKET listening = socket(AF_INET, SOCK_STREAM, 0);
 	if (listening == INVALID_SOCKET)
 	{
-		cerr << "Can't create a socket! Quitting" << endl;
-		return;
+		std::cerr << "Can't create a socket! Quitting" << std::endl;
+		return 0;
 	}
 
 	//Bind an ip address and a port to the socket
@@ -44,8 +44,8 @@ void main()
 	SOCKET clientSocket = accept(listening, (sockaddr*)&client, &clientSize);
 	if (clientSocket == INVALID_SOCKET)
 	{
-		cerr << "Couldn't establish connection! Quitting" << endl;
-		return;
+		std::cerr << "Couldn't establish connection! Quitting" << std::endl;
+		return 0;
 	}
 
 	char host[NI_MAXHOST];		// Client's remote name
@@ -58,12 +58,12 @@ void main()
 
 	if (getnameinfo((sockaddr*)&client, clientSize, host, NI_MAXHOST, service, NI_MAXSERV, 0) == 0)
 	{
-		cout << host << " connected on port " << service << endl;
+		std::cout << host << " connected on port " << service << std::endl;
 	}
 	else
 	{
 		inet_ntop(AF_INET, &client.sin_addr, host, NI_MAXHOST);
-		cout << host << " connected on port " << ntohs(client.sin_port) << endl;
+		std::cout << host << " connected on port " << ntohs(client.sin_port) << std::endl;
 	}
 
 	//Close listening socket
@@ -80,15 +80,18 @@ void main()
 		int bytesReceived = recv(clientSocket, buf, 4096, 0);
 		if (bytesReceived == SOCKET_ERROR)
 		{
-			cerr << "Error recieveing client data! Quitting." << endl;
+			std::cerr << "Error recieveing client data! Quitting." << std::endl;
 			break;
 		}
 
 		if (bytesReceived == 0)
 		{
-			cout << "Client disconnected" << endl;
+			std::cout << "Client disconnected" << std::endl;
 			break;
 		}
+
+		//Echo response to console
+		std::cout << "CLIENT> " << std::string(buf, 0, bytesReceived) << std::endl;
 
 		//Echo message back to client
 		send(clientSocket, buf, bytesReceived + 1, 0);
@@ -100,4 +103,5 @@ void main()
 	//Cleanup winsock
 	WSACleanup();
 
+	return 0;
 }
