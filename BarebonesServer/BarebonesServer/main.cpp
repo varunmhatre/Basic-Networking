@@ -96,7 +96,7 @@ int main()
 		//Echo response to console
 		std::cout << "CLIENT> " << std::string(buf, 0, bytesReceived) << std::endl;
 
-		//Get response for client
+		//Get quote for client
 		std::string quote = quotes.GetRandomQuote();
 
 		//Echo message back to client
