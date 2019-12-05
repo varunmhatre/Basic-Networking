@@ -1,12 +1,15 @@
 #include <iostream>
 #include <string>
 #include <WS2tcpip.h>
+#include "Qotd.h"
 
 #pragma comment (lib, "ws2_32.lib")
 
 
 int main()
 {
+	CQotd quotes("Resources//wisdom.txt");
+
 	//Initialize winsock
 	WSADATA wsData;
 	WORD ver = MAKEWORD(2, 2);
@@ -66,9 +69,6 @@ int main()
 		std::cout << host << " connected on port " << ntohs(client.sin_port) << std::endl;
 	}
 
-	//Close listening socket
-	closesocket(listening);
-
 	//While loop: accept and echo message back to client
 	char buf[4096];
 
@@ -93,15 +93,23 @@ int main()
 		//Echo response to console
 		std::cout << "CLIENT> " << std::string(buf, 0, bytesReceived) << std::endl;
 
+		//Get response for client
+		std::string quote = quotes.GetRandomQuote();
+
 		//Echo message back to client
-		send(clientSocket, buf, bytesReceived + 1, 0);
+		send(clientSocket, quote.c_str(), quote.length(), 0);
 	}
 
-	//Close the socket
+	//Close listening socket
+	closesocket(listening);
+
+	//Close the client socket
 	closesocket(clientSocket);
 
 	//Cleanup winsock
 	WSACleanup();
+
+	system("pause");
 
 	return 0;
 }
