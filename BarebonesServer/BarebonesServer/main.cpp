@@ -69,6 +69,9 @@ int main()
 		std::cout << host << " connected on port " << ntohs(client.sin_port) << std::endl;
 	}
 
+	//Close listening socket
+	closesocket(listening);
+
 	//While loop: accept and echo message back to client
 	char buf[4096];
 
@@ -97,11 +100,8 @@ int main()
 		std::string quote = quotes.GetRandomQuote();
 
 		//Echo message back to client
-		send(clientSocket, quote.c_str(), quote.length(), 0);
+		send(clientSocket, quote.c_str(), quote.size() + 1, 0);
 	}
-
-	//Close listening socket
-	closesocket(listening);
 
 	//Close the client socket
 	closesocket(clientSocket);
